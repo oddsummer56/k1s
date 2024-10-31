@@ -1,18 +1,21 @@
 name: oddsummer
 services:
   blog:
-    build: ./docker/httpd
-    ports:
+    build: ./k1s/docker/httpd
+    expose:
       - 80
     deploy:
       mode: replicated
       replicas: 1
       resources:
+        reservations:
+          cpus: '0.01'
+          memory: 10M
         limits:
-          cpus: 0.05
-          memory: 7MB
+          cpus: '0.01'
+          memory: 10M
     environment:
-      - VIRTUAL_HOST=localhost
+      - VIRTUAL_HOST=localhost, 172.31.46.94, 54.180.119.52
       - VIRTUAL_PORT=80
 
   load_balancer:
@@ -23,4 +26,11 @@ services:
       - blog
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-
+    deploy:
+      resources:
+        limits:
+          cpus: '0.05'
+          memory: 50M
+        reservations:
+          cpus: '0.01'
+          memory: 6M
